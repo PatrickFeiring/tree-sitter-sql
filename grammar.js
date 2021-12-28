@@ -209,7 +209,9 @@ module.exports = grammar({
             ...[
                 ['*', PREC.MULTIPLICATION],
                 ['/', PREC.MULTIPLICATION],
+                ['DIV', PREC.MULTIPLICATION],
                 ['%', PREC.MULTIPLICATION],
+                ['MOD', PREC.MULTIPLICATION],
                 ['-', PREC.ADDITION],
                 ['+', PREC.ADDITION],
                 ['<<', PREC.BITSHIFT],
