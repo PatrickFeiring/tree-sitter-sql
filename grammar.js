@@ -184,6 +184,8 @@ module.exports = grammar({
             $.identifier,
             $.unary_expression,
             $.binary_expression,
+            $.like_expression,
+            $.between_expression
         ),
 
         parenthesized_expression: $ => seq(
@@ -230,12 +232,35 @@ module.exports = grammar({
                 field('right', $._expression),
             )))),
 
+        // https://dev.mysql.com/doc/refman/8.0/en/string-comparison-functions.html#operator_not-like
+        like_expression: $ => prec.left(PREC.COMPARISON, choice(
+            seq(
+                $._expression,
+                "LIKE",
+                $.pattern
+            ),
+            seq(
+                $._expression,
+                "NOT LIKE",
+                $.pattern
+            ))),
+
+        between_expression: $ => prec.left(PREC.COMPARISON, seq(
+            $._expression,
+            "BETWEEN",
+            $._expression,
+            "AND",
+            $._expression
+        )),
+
         _field: $ => seq(
             // optional(seq(
             //     $.identifier, ","
             // )),
             $.identifier
         ),
+
+        pattern: $ => $.string,
 
         // Identifiers can quoted if keywords are used as names
         identifier: $ => choice(
