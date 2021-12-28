@@ -4,6 +4,7 @@
 //
 // https://dev.mysql.com/doc/refman/8.0/en/operator-precedence.html
 const PREC = {
+    INTERVAL: 14,
     MULTIPLICATION: 13, // *, /, DIV, %, MOD
     ADDITION: 12, // -, +
     BITSHIFT: 11, // <<, >>
@@ -184,6 +185,7 @@ module.exports = grammar({
             $.call,
             $.identifier,
             $.unary_expression,
+            $.interval_expression,
             $.binary_expression,
             $.like_expression,
             $.regex_expression,
@@ -266,6 +268,24 @@ module.exports = grammar({
             "AND",
             $._expression
         )),
+
+        interval_expression: $ => prec.left(PREC.INTERVAL, seq(
+            "INTERVAL",
+            $._expression,
+            $.interval_unit
+        )),
+
+        interval_unit: $ => choice(
+            "MICROSECOND",
+            "SECOND",
+            "MINUTE",
+            "HOUR",
+            "DAY",
+            "WEEK",
+            "MONTH",
+            "QUARTER",
+            "YEAR",
+        ),
 
         _field: $ => seq(
             // optional(seq(
