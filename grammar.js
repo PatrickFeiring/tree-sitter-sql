@@ -171,7 +171,7 @@ module.exports = grammar({
         call: $ => seq(
             field('function', $.identifier),
             "(",
-            optional(field('arguments', $.identifier)),
+            field("arguments", commaSeparated($._expression)),
             ")"
         ),
 
