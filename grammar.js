@@ -187,6 +187,7 @@ module.exports = grammar({
             $.unary_expression,
             $.interval_expression,
             $.binary_expression,
+            $.in_expression,
             $.like_expression,
             $.regex_expression,
             $.between_expression
@@ -237,6 +238,16 @@ module.exports = grammar({
                 field('operator', operator),
                 field('right', $._expression),
             )))),
+
+        in_expression: $ => prec.left(PREC.COMPARISON, choice(
+            seq(
+                $._expression,
+                optional("NOT"),
+                "IN",
+                "(",
+                commaSeparated1($._expression),
+                ")"
+            ))),
 
         // https://dev.mysql.com/doc/refman/8.0/en/string-comparison-functions.html#operator_not-like
         like_expression: $ => prec.left(PREC.COMPARISON, choice(
