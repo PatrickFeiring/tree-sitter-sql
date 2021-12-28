@@ -186,6 +186,7 @@ module.exports = grammar({
             $.unary_expression,
             $.binary_expression,
             $.like_expression,
+            $.regex_expression,
             $.between_expression
         ),
 
@@ -238,12 +239,24 @@ module.exports = grammar({
             seq(
                 $._expression,
                 "LIKE",
-                $.pattern
+                $.like_pattern
             ),
             seq(
                 $._expression,
                 "NOT LIKE",
-                $.pattern
+                $.like_pattern
+            ))),
+
+        regex_expression: $ => prec.left(PREC.COMPARISON, choice(
+            seq(
+                $._expression,
+                "REGEXP",
+                $.regex_pattern
+            ),
+            seq(
+                $._expression,
+                "NOT REGEXP",
+                $.regex_pattern
             ))),
 
         between_expression: $ => prec.left(PREC.COMPARISON, seq(
@@ -261,7 +274,9 @@ module.exports = grammar({
             $.identifier
         ),
 
-        pattern: $ => $.string,
+        like_pattern: $ => $.string,
+
+        regex_pattern: $ => $.string,
 
         // Identifiers can quoted if keywords are used as names
         identifier: $ => choice(
