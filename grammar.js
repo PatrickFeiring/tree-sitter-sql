@@ -35,6 +35,7 @@ module.exports = grammar({
                 $.select_statement,
                 $.update_statement,
                 $.delete_statement,
+                $.drop_table_statement,
                 $.truncate_table_statement,
                 $.insert_statement,
                 $.create_table_statement,
@@ -194,6 +195,15 @@ module.exports = grammar({
             $.where_clause,
             $.order_by_clause,
             $.limit_clause
+        ),
+
+        // https://dev.mysql.com/doc/refman/8.0/en/drop-table.html
+        drop_table_statement: $ => seq(
+            "DROP",
+            optional("TEMPORARY"),
+            "TABLE",
+            optional("IF EXISTS"),
+            $.identifier
         ),
 
         // https://dev.mysql.com/doc/refman/8.0/en/truncate-table.html
