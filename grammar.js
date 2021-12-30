@@ -27,6 +27,11 @@ function keyword(word) {
 module.exports = grammar({
     name: 'mysql',
 
+    extras: $ => [
+        $.comment,
+        /[\s\p{Zs}\uFEFF\u2060\u200B]/,
+    ],
+
     rules: {
         source_file: $ => repeat($.statement),
 
@@ -588,7 +593,18 @@ module.exports = grammar({
 
         false: $ => 'false',
 
-        NULL: $ => 'NULL'
+        NULL: $ => 'NULL',
+
+        // https://dev.mysql.com/doc/refman/8.0/en/comments.html
+        comment: $ => token(choice(
+            seq('--', /.*/),
+            seq('#', /.*/),
+            seq(
+                '/*',
+                /[^*]*\*+([^/*][^*]*\*+)*/,
+                '/'
+            )
+        ))
     }
 });
 
