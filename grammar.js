@@ -46,8 +46,121 @@ module.exports = grammar({
             ))
         ),
 
+        // Create table statement
+        // https://dev.mysql.com/doc/refman/8.0/en/create-table.html
         create_table_statement: $ => seq(
-            keyword('CREATE TABLE')
+            keyword('CREATE TABLE'),
+            optional('IF NOT EXISTS'),
+            $.identifier,
+            "(",
+            commaSeparated1($.create_definition),
+            ")"
+        ),
+
+        create_definition: $ => seq(
+            $.identifier,
+            $.column_definition
+        ),
+
+        column_definition: $ => seq(
+            $.data_type,
+            optional(seq(
+                optional("NOT"),
+                $.NULL
+            )),
+            optional(seq(
+                "DEFAULT",
+                $._expression
+            )),
+            optional(choice(
+                "VISIBLE",
+                "INVISIBLE"
+            )),
+            optional("AUTO_INCREMENT"),
+            optional(seq(
+                "UNIQUE",
+                optional("KEY")
+            )),
+            optional(seq(
+                optional("PRIMARY"),
+                "KEY")),
+            optional(seq(
+                'COMMENT',
+                $.string
+            ))),
+
+        // https://dev.mysql.com/doc/refman/8.0/en/data-types.html
+        data_type: $ => choice(
+            "TINYINT",
+            "SMALLINT",
+            "INT",
+            "INTEGER",
+            "BIGINT",
+            "DECIMAL",
+            "DEC",
+            "FIXED",
+            "NUMERIC",
+            "FLOAT",
+            "DOUBLE PRECISION",
+            "DOUBLE",
+            "REAL",
+            "BIT",
+
+            "DATE",
+            "TIME",
+            "DATETIME",
+            "TIMESTAMP",
+            "YEAR",
+
+            seq(
+                "CHAR",
+                "(",
+                $.integer,
+                ")"
+            ),
+            seq(
+                "VARCHAR",
+                "(",
+                $.integer,
+                ")"
+            ),
+
+            seq(
+                "BINARY",
+                "(",
+                $.integer,
+                ")"
+            ),
+            seq(
+                "VARBINARY",
+                "(",
+                $.integer,
+                ")"
+            ),
+
+            "TINYBLOB",
+            "BLOB",
+            "MEDIUMBLOB",
+            "LONGBLOB",
+
+            "TINYTEXT",
+            "TEXT",
+            "MEDIUMTEXT",
+            "LONGTEXT",
+
+            seq(
+                "ENUM",
+                "(",
+                commaSeparated1($.string),
+                ")"
+            ),
+
+            seq(
+                "SET",
+                "(",
+                commaSeparated1($.string),
+                ")"
+            ),
         ),
 
         // Select statement
