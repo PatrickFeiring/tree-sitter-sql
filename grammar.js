@@ -40,7 +40,10 @@ module.exports = grammar({
                 $.create_table_statement,
                 $.show_tables_statement
             ),
-            optional(";")
+            optional(choice(
+                ";",
+                "\\G"
+            ))
         ),
 
         create_table_statement: $ => seq(
