@@ -38,6 +38,7 @@ module.exports = grammar({
                 $.truncate_table_statement,
                 $.insert_statement,
                 $.create_table_statement,
+                $.show_tables_statement
             ),
             optional(";")
         ),
@@ -84,6 +85,25 @@ module.exports = grammar({
             'TRUNCATE',
             optional('TABLE'),
             $.identifier
+        ),
+
+        // https://dev.mysql.com/doc/refman/8.0/en/show-tables.html
+        show_tables_statement: $ => seq(
+            "SHOW",
+            optional("EXTENDED"),
+            optional("FULL"),
+            "TABLES",
+            optional(seq(
+                choice(
+                    "FROM",
+                    "IN",
+                ),
+                $.identifier
+            )),
+            optional(seq(
+                "LIKE",
+                $.like_pattern
+            )),
         ),
 
         // Insert into statement
