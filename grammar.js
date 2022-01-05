@@ -98,11 +98,11 @@ module.exports = grammar({
 
         // https://dev.mysql.com/doc/refman/8.0/en/data-types.html
         data_type: $ => choice(
-            "TINYINT",
-            "SMALLINT",
-            "INT",
-            "INTEGER",
-            "BIGINT",
+            withDisplayWidth($, "TINYINT"),
+            withDisplayWidth($, "SMALLINT"),
+            withDisplayWidth($, "INT"),
+            withDisplayWidth($, "INTEGER"),
+            withDisplayWidth($, "BIGINT"),
             "DECIMAL",
             "DEC",
             "FIXED",
@@ -661,4 +661,15 @@ function commaSeparated(rule) {
 
 function commaSeparated1(rule) {
     return seq(rule, repeat(seq(",", rule)))
+}
+
+function withDisplayWidth($, rule) {
+    return seq(
+        rule,
+        optional(seq(
+            "(",
+            $.integer,
+            ")"
+        ))
+    )
 }
