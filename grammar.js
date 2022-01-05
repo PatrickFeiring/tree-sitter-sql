@@ -340,10 +340,7 @@ module.exports = grammar({
         ),
 
         column: $ => seq(
-            choice(
-                $._literal,
-                $.call,
-                $._field),
+            $._expression,
             optional($._alias)
         ),
 
@@ -418,7 +415,7 @@ module.exports = grammar({
             $.parenthesized_expression,
             $._literal,
             $.call,
-            $.identifier,
+            $._field,
             $.unary_expression,
             $.interval_expression,
             $.binary_expression,
