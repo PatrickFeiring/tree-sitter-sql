@@ -40,6 +40,7 @@ module.exports = grammar({
                 $.select_statement,
                 $.update_statement,
                 $.delete_statement,
+                $.alter_table_statement,
                 $.drop_table_statement,
                 $.truncate_table_statement,
                 $.insert_statement,
@@ -168,6 +169,54 @@ module.exports = grammar({
                 commaSeparated1($.string),
                 ")"
             ),
+        ),
+
+        alter_table_statement: $ => seq(
+            "ALTER TABLE",
+            $.table_name,
+            choice(
+                seq(
+                    "ADD",
+                    optional("COLUMN"),
+                    $.column_definition
+                ),
+                seq(
+                    "CHANGE",
+                    optional("COLUMN"),
+                    $.identifier,
+                    $.identifier,
+                    $.column_definition,
+                    optional(choice(
+                        "FIRST",
+                        seq(
+                            "AFTER",
+                            $.identifier
+                        )
+                    ))
+                ),
+                seq(
+                    "MODIFY",
+                    optional("COLUMN"),
+                    $.column_definition
+                ),
+                seq(
+                    "ADD",
+                    choice(
+                        "INDEX",
+                        "KEY"
+                    ),
+                    optional($.identifier),
+                    optional($.index_type)
+                )
+            )
+        ),
+
+        index_type: $ => seq(
+            "USING",
+            choice(
+                "BTREE",
+                "HASH"
+            )
         ),
 
         // Select statement
