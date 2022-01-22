@@ -626,18 +626,8 @@ module.exports = grammar({
         ),
 
         column_name: $ => seq(
-            optional(field(
-                'database', seq(
-                    $.identifier,
-                    "."
-                ))),
-            optional(field(
-                'table', seq(
-                    $.identifier,
-                    "."
-                ))),
-            field('column', $.identifier)
-        ),
+            optional($.table_name),
+            field('column', $.identifier)),
 
         table_name: $ => seq(
             optional(field(
