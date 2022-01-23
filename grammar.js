@@ -57,7 +57,8 @@ module.exports = grammar({
         _database_administration_statements: ($) =>
             choice($.show_tables_statement),
 
-        _utility_statement: ($) => choice($.explain_table_statement),
+        _utility_statement: ($) =>
+            choice($.explain_table_statement, $.use_statement),
 
         // Create table statement
         // https://dev.mysql.com/doc/refman/8.0/en/create-table.html
@@ -271,6 +272,8 @@ module.exports = grammar({
                     )
                 )
             ),
+
+        use_statement: ($) => seq("USE", $.database_name),
 
         // Insert statement
         insert_statement: ($) =>
