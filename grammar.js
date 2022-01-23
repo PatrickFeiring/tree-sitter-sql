@@ -38,6 +38,7 @@ module.exports = grammar({
                     $.select_statement,
                     $.update_statement,
                     $.delete_statement,
+                    $.table_statement,
                     $.alter_table_statement,
                     $.drop_table_statement,
                     $.truncate_table_statement,
@@ -118,6 +119,14 @@ module.exports = grammar({
                 seq("ENUM", "(", commaSeparated1($.string), ")"),
 
                 seq("SET", "(", commaSeparated1($.string), ")")
+            ),
+
+        table_statement: ($) =>
+            seq(
+                "TABLE",
+                $.table_name,
+                optional(seq("ORDER BY", $.column_name)),
+                $.limit_offset_clause
             ),
 
         alter_table_statement: ($) =>
