@@ -64,8 +64,8 @@ module.exports = grammar({
         // https://dev.mysql.com/doc/refman/8.0/en/create-table.html
         create_table_statement: ($) =>
             seq(
-                keyword("CREATE TABLE"),
-                optional("IF NOT EXISTS"),
+                kw("CREATE TABLE"),
+                optional(kw("IF NOT EXISTS")),
                 $.identifier,
                 "(",
                 commaSeparated1($.create_definition),
@@ -77,13 +77,13 @@ module.exports = grammar({
         column_definition: ($) =>
             seq(
                 $.data_type,
-                optional(seq(optional("NOT"), $.NULL)),
-                optional(seq("DEFAULT", $._expression)),
-                optional(choice("VISIBLE", "INVISIBLE")),
-                optional("AUTO_INCREMENT"),
-                optional(seq("UNIQUE", optional("KEY"))),
-                optional(seq(optional("PRIMARY"), "KEY")),
-                optional(seq("COMMENT", $.string))
+                optional(seq(optional(kw("NOT")), $.NULL)),
+                optional(seq(kw("DEFAULT"), $._expression)),
+                optional(choice(kw("VISIBLE"), kw("INVISIBLE"))),
+                optional(kw("AUTO_INCREMENT")),
+                optional(seq(kw("UNIQUE"), optional(kw("KEY")))),
+                optional(seq(optional(kw("PRIMARY")), kw("KEY"))),
+                optional(seq(kw("COMMENT"), $.string))
             ),
 
         // https://dev.mysql.com/doc/refman/8.0/en/data-types.html
@@ -133,45 +133,54 @@ module.exports = grammar({
 
         table_statement: ($) =>
             seq(
-                "TABLE",
+                kw("TABLE"),
                 $.table_name,
-                optional(seq("ORDER BY", $.column_name)),
+                optional(seq(kw("ORDER BY"), $.column_name)),
                 $.limit_offset_clause
             ),
 
         alter_table_statement: ($) =>
             seq(
-                "ALTER TABLE",
+                kw("ALTER TABLE"),
                 $.table_name,
                 choice(
-                    seq("ADD", optional("COLUMN"), $.column_definition),
+                    seq(kw("ADD"), optional(kw("COLUMN")), $.column_definition),
                     seq(
-                        "CHANGE",
-                        optional("COLUMN"),
+                        kw("CHANGE"),
+                        optional(kw("COLUMN")),
                         $.identifier,
                         $.identifier,
                         $.column_definition,
-                        optional(choice("FIRST", seq("AFTER", $.identifier)))
+                        optional(
+                            choice(kw("FIRST"), seq(kw("AFTER"), $.identifier))
+                        )
                     ),
-                    seq("MODIFY", optional("COLUMN"), $.column_definition),
                     seq(
-                        "ADD",
-                        choice("INDEX", "KEY"),
+                        kw("MODIFY"),
+                        optional(kw("COLUMN")),
+                        $.column_definition
+                    ),
+                    seq(
+                        kw("ADD"),
+                        choice(kw("INDEX"), kw("KEY")),
                         optional($.identifier),
                         optional($.index_type)
                     )
                 )
             ),
 
-        index_type: ($) => seq("USING", choice("BTREE", "HASH")),
+        index_type: ($) => seq(kw("USING"), choice(kw("BTREE"), kw("HASH"))),
 
         // Select statement
         // https://dev.mysql.com/doc/refman/8.0/en/select.html
         select_statement: ($) =>
             seq(
-                keyword("SELECT"),
+                kw("SELECT"),
+                optional(choice(kw("ALL"), kw("DISTINCT"), kw("DISTINCTROW"))),
+                optional(kw("HIGH PRIORITY")),
+                optional(kw("STRAIGHT_JOIN")),
                 $.select_expression,
-                keyword("FROM"),
+                kw("FROM"),
                 $.table_references,
                 optional($.where_clause),
                 optional($.group_by_clause),
@@ -188,11 +197,11 @@ module.exports = grammar({
 
         _single_table_update_statement: ($) =>
             seq(
-                keyword("UPDATE"),
+                kw("UPDATE"),
                 optional("LOW_PRIORITY"),
                 optional("IGNORE"),
                 $.table_name,
-                keyword("SET"),
+                kw("SET"),
                 $.assignment_list,
                 optional($.where_clause),
                 optional($.order_by_clause),
@@ -201,11 +210,11 @@ module.exports = grammar({
 
         _multi_table_update_statement: ($) =>
             seq(
-                keyword("UPDATE"),
-                optional("LOW_PRIORITY"),
-                optional("IGNORE"),
+                kw("UPDATE"),
+                optional(kw("LOW_PRIORITY")),
+                optional(kw("IGNORE")),
                 $.table_name,
-                keyword("SET"),
+                kw("SET"),
                 $.assignment_list,
                 optional($.where_clause)
             ),
@@ -218,13 +227,13 @@ module.exports = grammar({
                 prec.left(PREC.ASSIGNMENT, seq("=", field("value", $.value)))
             ),
 
-        value: ($) => choice("DEFAULT", $._expression),
+        value: ($) => choice(kw("DEFAULT"), $._expression),
 
         // Delete statement
         // https://dev.mysql.com/doc/refman/8.0/en/delete.html
         delete_statement: ($) =>
             seq(
-                keyword("DELETE FROM"),
+                kw("DELETE FROM"),
                 $.table_name,
                 $.where_clause,
                 $.order_by_clause,
@@ -234,26 +243,26 @@ module.exports = grammar({
         // https://dev.mysql.com/doc/refman/8.0/en/drop-table.html
         drop_table_statement: ($) =>
             seq(
-                "DROP",
-                optional("TEMPORARY"),
-                "TABLE",
-                optional("IF EXISTS"),
+                kw("DROP"),
+                optional(kw("TEMPORARY")),
+                kw("TABLE"),
+                optional(kw("IF EXISTS")),
                 $.table_name
             ),
 
         // https://dev.mysql.com/doc/refman/8.0/en/truncate-table.html
         truncate_table_statement: ($) =>
-            seq("TRUNCATE", optional("TABLE"), $.table_name),
+            seq(kw("TRUNCATE"), optional(kw("TABLE")), $.table_name),
 
         // https://dev.mysql.com/doc/refman/8.0/en/show-tables.html
         show_tables_statement: ($) =>
             seq(
-                "SHOW",
-                optional("EXTENDED"),
-                optional("FULL"),
-                "TABLES",
-                optional(seq(choice("FROM", "IN"), $.identifier)),
-                optional(seq("LIKE", $.like_pattern))
+                kw("SHOW"),
+                optional(kw("EXTENDED")),
+                optional(kw("FULL")),
+                kw("TABLES"),
+                optional(seq(choice(kw("FROM"), kw("IN")), $.identifier)),
+                optional(seq(kw("LIKE"), $.like_pattern))
             ),
 
         // Explain statement
@@ -261,9 +270,9 @@ module.exports = grammar({
         explain_table_statement: ($) =>
             seq(
                 choice(
-                    "EXPLAIN",
-                    "DESCRIBE"
-                    // "DESC"
+                    kw("EXPLAIN"),
+                    kw("DESCRIBE")
+                    // kw("DESC")
                 ),
                 choice(
                     seq(
@@ -273,19 +282,19 @@ module.exports = grammar({
                 )
             ),
 
-        use_statement: ($) => seq("USE", $.database_name),
+        use_statement: ($) => seq(kw("USE"), $.database_name),
 
         // Insert statement
         insert_statement: ($) =>
             seq(
-                "INSERT",
-                optional("IGNORE"),
-                "INTO",
+                kw("INSERT"),
+                optional(kw("IGNORE")),
+                kw("INTO"),
                 $.table_name,
                 choice(
                     seq(
                         $.column_list,
-                        "VALUES",
+                        kw("VALUES"),
                         commaSeparated1($.value_list),
                         optional($.on_duplicate_key_clause)
                     ),
@@ -302,7 +311,7 @@ module.exports = grammar({
 
         value_list: ($) => seq("(", commaSeparated($._expression), ")"),
 
-        on_duplicate_key_clause: ($) => seq("ON DUPLICATE KEY UPDATE"),
+        on_duplicate_key_clause: ($) => seq(kw("ON DUPLICATE KEY UPDATE")),
 
         select_expression: ($) =>
             choice(
@@ -323,56 +332,61 @@ module.exports = grammar({
             choice(
                 seq(
                     choice(
-                        seq(optional(choice("INNER", "CROSS")), "JOIN"),
-                        "STRAIGHT_JOIN"
+                        seq(
+                            optional(choice(kw("INNER"), kw("CROSS"))),
+                            kw("JOIN")
+                        ),
+                        kw("STRAIGHT_JOIN")
                     ),
                     $.identifier,
                     optional($._join_specification)
                 ),
                 seq(
-                    choice("LEFT", "RIGHT"),
-                    optional("OUTER"),
-                    "JOIN",
+                    choice(kw("LEFT"), kw("RIGHT")),
+                    optional(kw("OUTER")),
+                    kw("JOIN"),
                     $.identifier,
                     $._join_specification
                 ),
-                seq("NATURAL", "JOIN", $.identifier)
+                seq(kw("NATURAL"), kw("JOIN"), $.identifier)
             ),
 
         _join_specification: ($) =>
             choice(
                 choice(
-                    seq("ON", $._expression),
-                    seq("USING", "(", commaSeparated1($.identifier), ")")
+                    seq(kw("ON"), $._expression),
+                    seq(kw("USING"), "(", commaSeparated1($.identifier), ")")
                 )
             ),
 
         column: ($) => seq($._expression, optional($._alias)),
 
-        where_clause: ($) => seq(keyword("WHERE"), $.where_condition),
+        where_clause: ($) => seq(kw("WHERE"), $.where_condition),
 
         where_condition: ($) => choice($._expression),
 
         group_by_clause: ($) =>
             seq(
-                keyword("GROUP BY"),
+                kw("GROUP BY"),
                 commaSeparated1($.column),
-                optional(keyword("WITH ROLLUP"))
+                optional(kw("WITH ROLLUP"))
             ),
 
-        having_clause: ($) => seq(keyword("HAVING"), $.where_condition),
+        having_clause: ($) => seq(kw("HAVING"), $.where_condition),
 
         order_by_clause: ($) =>
             seq(
-                keyword("ORDER BY"),
-                commaSeparated1(seq($.column, optional(choice("ASC", "DESC"))))
+                kw("ORDER BY"),
+                commaSeparated1(
+                    seq($.column, optional(choice(kw("ASC"), kw("DESC"))))
+                )
             ),
 
         // Limit clauses are sometimes applicable without the offset
         // clause, e.g. in delete statements
-        offset_clause: ($) => seq(keyword("OFFSET"), $.integer),
+        offset_clause: ($) => seq(kw("OFFSET"), $.integer),
 
-        limit_clause: ($) => seq(keyword("LIMIT"), $.integer),
+        limit_clause: ($) => seq(kw("LIMIT"), $.integer),
 
         limit_offset_clause: ($) =>
             seq($.limit_clause, optional($.offset_clause)),
@@ -381,8 +395,7 @@ module.exports = grammar({
         // statements and expressions.
 
         // Alias can be used without the explicit AS
-        _alias: ($) =>
-            seq(optional(keyword("AS")), field("alias", $.identifier)),
+        _alias: ($) => seq(optional(kw("AS")), field("alias", $.identifier)),
 
         call: ($) =>
             seq(
@@ -413,7 +426,7 @@ module.exports = grammar({
 
         unary_expression: ($) =>
             choice(
-                ...[["NOT", PREC.NOT]].map(([operator, p]) =>
+                ...[[kw("NOT"), PREC.NOT]].map(([operator, p]) =>
                     prec.left(
                         p,
                         seq(
@@ -471,7 +484,7 @@ module.exports = grammar({
                     seq(
                         $._expression,
                         optional("NOT"),
-                        "IN",
+                        kw("IN"),
                         "(",
                         commaSeparated1($._expression),
                         ")"
@@ -484,8 +497,8 @@ module.exports = grammar({
             prec.left(
                 PREC.COMPARISON,
                 choice(
-                    seq($._expression, "LIKE", $.like_pattern),
-                    seq($._expression, "NOT LIKE", $.like_pattern)
+                    seq($._expression, kw("LIKE"), $.like_pattern),
+                    seq($._expression, kw("NOT LIKE"), $.like_pattern)
                 )
             ),
 
@@ -493,8 +506,8 @@ module.exports = grammar({
             prec.left(
                 PREC.COMPARISON,
                 choice(
-                    seq($._expression, "REGEXP", $.regex_pattern),
-                    seq($._expression, "NOT REGEXP", $.regex_pattern)
+                    seq($._expression, kw("REGEXP"), $.regex_pattern),
+                    seq($._expression, kw("NOT REGEXP"), $.regex_pattern)
                 )
             ),
 
@@ -503,9 +516,9 @@ module.exports = grammar({
                 PREC.COMPARISON,
                 seq(
                     $._expression,
-                    "BETWEEN",
+                    kw("BETWEEN"),
                     $._expression,
-                    "AND",
+                    kw("AND"),
                     $._expression
                 )
             ),
@@ -513,7 +526,7 @@ module.exports = grammar({
         interval_expression: ($) =>
             prec.left(
                 PREC.INTERVAL,
-                seq("INTERVAL", $._expression, $.interval_unit)
+                seq(kw("INTERVAL"), $._expression, $.interval_unit)
             ),
 
         interval_unit: ($) =>
@@ -607,6 +620,27 @@ function withDisplayWidth($, rule) {
     return seq(rule, optional(seq("(", $.integer, ")")));
 }
 
-function keyword(word) {
-    return word;
+function caseInsensitive(value) {
+    return new RegExp(
+        value
+            .split("")
+            .map((letter) => `[${letter.toLowerCase()}${letter.toUpperCase()}]`)
+            .join("")
+    );
+}
+
+// Aliasing ...
+function kw(keyword) {
+    if (keyword.toUpperCase() != keyword) {
+        throw new Error(`Expected upper case keyword got ${keyword}`);
+    }
+
+    const words = keyword.split(" ");
+    const regExps = words.map(caseInsensitive);
+
+    if (regExps.length == 1) {
+        return alias(regExps[0], keyword);
+    } else {
+        return alias(seq(...regExps), keyword.replace(/ /g, "_"));
+    }
 }
