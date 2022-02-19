@@ -1,20 +1,22 @@
 // Operator precedence
 //
 // https://dev.mysql.com/doc/refman/8.0/en/operator-precedence.html
+// prettier-ignore
 const PREC = {
-    INTERVAL: 14,
-    MULTIPLICATION: 13, // *, /, DIV, %, MOD
-    ADDITION: 12, // -, +
-    BITSHIFT: 11, // <<, >>
-    BITWISE_AND: 10, // &
-    BITWISE_OR: 9, // |
-    COMPARISON: 8, // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, IN, MEMBER OF
-    NOT: 7,
-    AND: 6, // AND, &&
-    XOR: 5,
-    OR: 4, // OR, ||
-    ASSIGNMENT: 3, // :=
-    LITERAL: 2,
+    INTERVAL:       15,
+    MULTIPLICATION: 14, // *, /, DIV, %, MOD
+    ADDITION:       13, // -, +
+    BITSHIFT:       12, // <<, >>
+    BITWISE_AND:    11, // &
+    BITWISE_OR:     10, // |
+    COMPARISON:      9, // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, IN, MEMBER OF
+    NOT:             8,
+    AND:             7, // AND, &&
+    XOR:             6,
+    OR:              5, // OR, ||
+    ASSIGNMENT:      4, // :=
+    LITERAL:         3,
+    JOIN:            2,
 };
 
 module.exports = grammar({
@@ -319,39 +321,75 @@ module.exports = grammar({
                 commaSeparated1(choice(seq($.identifier, ".", "*"), $.column))
             ),
 
-        table_references: ($) =>
-            seq(
-                choice(
-                    seq($.table_name, optional($._alias)),
-                    seq("(", $.select_statement, ")", $._alias)
-                ),
-                optional($.join_clause)
-            ),
+        table_references: ($) => commaSeparated1($._table_reference),
 
-        join_clause: ($) =>
+        _table_reference: ($) => choice($.table_factor, $.joined_table),
+
+        table_factor: ($) =>
             choice(
                 seq(
-                    choice(
-                        seq(
-                            optional(choice(kw("INNER"), kw("CROSS"))),
-                            kw("JOIN")
-                        ),
-                        kw("STRAIGHT_JOIN")
-                    ),
-                    $.identifier,
-                    optional($._join_specification)
+                    $.table_name,
+                    optional(seq(kw("PARTITION"))),
+                    optional($._alias)
                 ),
                 seq(
-                    choice(kw("LEFT"), kw("RIGHT")),
-                    optional(kw("OUTER")),
-                    kw("JOIN"),
-                    $.identifier,
-                    $._join_specification
+                    optional(kw("LATERAL")),
+                    "(",
+                    $.table_subquery,
+                    ")",
+                    $._alias
                 ),
-                seq(kw("NATURAL"), kw("JOIN"), $.identifier)
+                seq("(", $.table_references, ")")
             ),
 
-        _join_specification: ($) =>
+        table_subquery: ($) => $.select_statement,
+
+        joined_table: ($) =>
+            choice(
+                prec.left(
+                    PREC.JOIN,
+                    seq(
+                        $._table_reference,
+                        choice(
+                            seq(
+                                optional(choice(kw("INNER"), kw("CROSS"))),
+                                kw("JOIN")
+                            ),
+                            kw("STRAIGHT_JOIN")
+                        ),
+                        $.table_factor,
+                        optional($.join_specification)
+                    )
+                ),
+                prec.left(
+                    PREC.JOIN,
+                    seq(
+                        $._table_reference,
+                        choice(kw("LEFT"), kw("RIGHT")),
+                        optional(kw("OUTER")),
+                        kw("JOIN"),
+                        $._table_reference,
+                        $.join_specification
+                    )
+                ),
+                prec.left(
+                    PREC.JOIN,
+                    seq(
+                        kw("NATURAL"),
+                        choice(
+                            kw("INNER"),
+                            seq(
+                                choice(kw("LEFT"), kw("RIGHT")),
+                                optional(kw("OUTER"))
+                            )
+                        ),
+                        kw("JOIN"),
+                        $.table_factor
+                    )
+                )
+            ),
+
+        join_specification: ($) =>
             choice(
                 choice(
                     seq(kw("ON"), $._expression),
