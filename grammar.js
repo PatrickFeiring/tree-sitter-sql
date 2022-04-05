@@ -276,6 +276,10 @@ module.exports = grammar({
                 optional(seq(kw("LIKE"), $.like_pattern))
             ),
 
+        // https://dev.mysql.com/doc/refman/8.0/en/show-processlist.html
+        show_processlist_statement: ($) =>
+            seq(kw("SHOW"), optional(kw("FULL")), kw("PROCESSLIST")),
+
         // https://dev.mysql.com/doc/refman/8.0/en/show-tables.html
         show_tables_statement: ($) =>
             seq(
