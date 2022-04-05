@@ -61,13 +61,14 @@ module.exports = grammar({
 
         _show_statements: ($) =>
             choice(
+                $.show_create_table_statement,
                 $.show_databases_statement,
                 $.show_processlist_statement,
                 $.show_tables_statement
             ),
 
-        _utility_statement: ($) =>
-            choice($.explain_table_statement, $.use_statement),
+        _utility_statement: ($) => choice($.explain_table_statement),
+        // choice($.explain_table_statement, $.use_statement),
 
         // Create table statement
         // https://dev.mysql.com/doc/refman/8.0/en/create-table.html
@@ -270,6 +271,10 @@ module.exports = grammar({
                 optional(choice(kw("CONNECTION"), kw("QUERY"))),
                 $.integer
             ),
+
+        // https://dev.mysql.com/doc/refman/8.0/en/show-create-table.html
+        show_create_table_statement: ($) =>
+            seq(kw("SHOW CREATE TABLE"), $.table_name),
 
         // https://dev.mysql.com/doc/refman/8.0/en/show-tables.html
         show_databases_statement: ($) =>
