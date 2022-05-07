@@ -153,31 +153,79 @@ module.exports = grammar({
             seq(
                 kw("ALTER TABLE"),
                 $.table_name,
-                choice(
-                    seq(kw("ADD"), optional(kw("COLUMN")), $.column_definition),
-                    seq(
-                        kw("CHANGE"),
-                        optional(kw("COLUMN")),
-                        $.identifier,
-                        $.identifier,
-                        $.column_definition,
-                        optional(
-                            choice(kw("FIRST"), seq(kw("AFTER"), $.identifier))
-                        )
-                    ),
-                    seq(
-                        kw("MODIFY"),
-                        optional(kw("COLUMN")),
-                        $.column_definition
-                    ),
-                    seq(
-                        kw("ADD"),
-                        choice(kw("INDEX"), kw("KEY")),
-                        optional($.identifier),
-                        optional($.index_type)
-                    )
-                )
+                commaSeparated1($.alter_option)
             ),
+
+        alter_option: ($) =>
+            choice(
+                seq(
+                    kw("ADD"),
+                    optional(kw("COLUMN")),
+                    $.identifier,
+                    $.column_definition,
+                    optional(choice(kw("FIRST"), seq("AFTER", $.identifier)))
+                ),
+                seq(
+                    kw("ADD"),
+                    choice(kw("INDEX"), kw("KEY")),
+                    optional($.identifier),
+                    optional($.index_type),
+                    commaSeparated1($.key_part)
+                ),
+                seq(
+                    kw("ADD"),
+                    optional(seq(kw("CONSTRAINT"), optional($.identifier))),
+                    kw("PRIMARY KEY"),
+                    optional($.index_type),
+                    commaSeparated1($.key_part)
+                ),
+                seq(
+                    kw("ADD"),
+                    optional(seq(kw("CONSTRAINT"), optional($.identifier))),
+                    kw("UNIQUE"),
+                    optional(choice(kw("INDEX"), kw("KEY"))),
+                    optional($.identifier),
+                    optional($.index_type),
+                    commaSeparated1($.key_part)
+                ),
+
+                seq(
+                    kw("CHANGE"),
+                    optional(kw("COLUMN")),
+                    $.identifier,
+                    $.identifier,
+                    $.column_definition,
+                    optional(
+                        choice(kw("FIRST"), seq(kw("AFTER"), $.identifier))
+                    )
+                ),
+
+                seq(kw("DROP"), optional(kw("COLUMN")), $.identifier),
+                seq(kw("DROP"), choice(kw("INDEX"), kw("KEY")), $.identifier),
+                kw("DROP PRIMARY KEY"),
+
+                seq(
+                    kw("MODIFY"),
+                    optional(kw("COLUMN")),
+                    $.identifier,
+                    $.column_definition,
+                    optional(
+                        choice(kw("FIRST"), seq(kw("AFTER"), $.identifier))
+                    )
+                ),
+
+                seq(kw("RENAME COLUMN"), $.identifier, kw("TO"), $.identifier),
+                seq(
+                    kw("RENAME"),
+                    choice(kw("INDEX"), kw("KEY")),
+                    $.identifier,
+                    kw("TO"),
+                    $.identifier
+                ),
+                seq(kw("RENAME"), choice(kw("TO"), kw("AS")), $.identifier)
+            ),
+
+        key_part: ($) => $.identifier,
 
         index_type: ($) => seq(kw("USING"), choice(kw("BTREE"), kw("HASH"))),
 
