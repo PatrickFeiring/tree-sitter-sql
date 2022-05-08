@@ -1,6 +1,3 @@
-// Operator precedence
-//
-// https://dev.mysql.com/doc/refman/8.0/en/operator-precedence.html
 // prettier-ignore
 const PREC = {
     INTERVAL:       15,
@@ -27,7 +24,6 @@ module.exports = grammar({
     rules: {
         source_file: ($) => repeat($.statement),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/sql-statements.html
         statement: ($) =>
             seq(
                 choice(
@@ -74,8 +70,6 @@ module.exports = grammar({
                 $.use_statement
             ),
 
-        // Create table statement
-        // https://dev.mysql.com/doc/refman/8.0/en/create-table.html
         create_table_statement: ($) =>
             seq(
                 kw("CREATE TABLE"),
@@ -100,7 +94,6 @@ module.exports = grammar({
                 optional(seq(kw("COMMENT"), $.string))
             ),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/data-types.html
         data_type: ($) =>
             choice(
                 withDisplayWidth($, "TINYINT"),
@@ -233,8 +226,6 @@ module.exports = grammar({
 
         index_type: ($) => seq(kw("USING"), choice(kw("BTREE"), kw("HASH"))),
 
-        // Select statement
-        // https://dev.mysql.com/doc/refman/8.0/en/select.html
         select_statement: ($) =>
             seq(
                 kw("SELECT"),
@@ -291,8 +282,6 @@ module.exports = grammar({
 
         value: ($) => choice(kw("DEFAULT"), $._expression),
 
-        // Delete statement
-        // https://dev.mysql.com/doc/refman/8.0/en/delete.html
         delete_statement: ($) =>
             seq(
                 kw("DELETE FROM"),
@@ -302,7 +291,6 @@ module.exports = grammar({
                 $.limit_clause
             ),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/drop-table.html
         drop_table_statement: ($) =>
             seq(
                 kw("DROP"),
@@ -312,11 +300,9 @@ module.exports = grammar({
                 $.table_name
             ),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/truncate-table.html
         truncate_table_statement: ($) =>
             seq(kw("TRUNCATE"), optional(kw("TABLE")), $.table_name),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/kill.html
         kill_statement: ($) =>
             seq(
                 kw("KILL"),
@@ -324,7 +310,6 @@ module.exports = grammar({
                 $.integer
             ),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/show-create-table.html
         show_create_table_statement: ($) =>
             seq(kw("SHOW CREATE TABLE"), $.table_name),
 
@@ -336,11 +321,9 @@ module.exports = grammar({
                 optional(seq(kw("LIKE"), $.like_pattern))
             ),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/show-processlist.html
         show_processlist_statement: ($) =>
             seq(kw("SHOW"), optional(kw("FULL")), kw("PROCESSLIST")),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/show-tables.html
         show_tables_statement: ($) =>
             seq(
                 kw("SHOW"),
@@ -351,15 +334,9 @@ module.exports = grammar({
                 optional(seq(kw("LIKE"), $.like_pattern))
             ),
 
-        // Explain statement
-        // https://dev.mysql.com/doc/refman/8.0/en/explain.html
         explain_table_statement: ($) =>
             seq(
-                choice(
-                    kw("EXPLAIN"),
-                    kw("DESCRIBE")
-                    // kw("DESC")
-                ),
+                choice(kw("EXPLAIN"), kw("DESCRIBE"), kw("DESC")),
                 choice(
                     seq(
                         $.table_name,
@@ -372,7 +349,6 @@ module.exports = grammar({
 
         use_statement: ($) => seq(kw("USE"), $.database_name),
 
-        // Insert statement
         insert_statement: ($) =>
             seq(
                 kw("INSERT"),
@@ -515,10 +491,6 @@ module.exports = grammar({
         limit_offset_clause: ($) =>
             seq($.limit_clause, optional($.offset_clause)),
 
-        // Basic components used as building block in many types of
-        // statements and expressions.
-
-        // Alias can be used without the explicit AS
         _alias: ($) => seq(optional(kw("AS")), field("alias", $.identifier)),
 
         call: ($) =>
@@ -529,8 +501,6 @@ module.exports = grammar({
                 ")"
             ),
 
-        // Operators
-        // https://dev.mysql.com/doc/refman/8.0/en/non-typed-operators.html
         _expression: ($) =>
             choice(
                 $.parenthesized_expression,
@@ -617,7 +587,6 @@ module.exports = grammar({
                 )
             ),
 
-        // https://dev.mysql.com/doc/refman/8.0/en/string-comparison-functions.html#operator_not-like
         like_expression: ($) =>
             prec.left(
                 PREC.COMPARISON,
@@ -702,7 +671,7 @@ module.exports = grammar({
 
         regex_pattern: ($) => $.string,
 
-        // Identifiers can quoted if keywords are used as names
+        // Identifiers can be quoted if keywords are used as names
         identifier: ($) => choice($._identifier, seq("`", $._identifier, "`")),
         _identifier: ($) => /[a-zA-Z][0-9a-zA-Z_]*/,
 
@@ -719,8 +688,6 @@ module.exports = grammar({
 
         database_name: ($) => field("database", $.identifier),
 
-        // Literals
-        // https://dev.mysql.com/doc/refman/8.0/en/literals.html
         _literal: ($) =>
             prec(
                 PREC.LITERAL,
@@ -752,7 +719,6 @@ module.exports = grammar({
 
         NULL: ($) => "NULL",
 
-        // https://dev.mysql.com/doc/refman/8.0/en/comments.html
         comment: ($) =>
             token(
                 choice(
@@ -785,7 +751,11 @@ function caseInsensitive(value) {
     );
 }
 
-// Aliasing ...
+// Create a case insensitive keyword
+//
+// Using the alias function, the regex rule for each keyword is given a simple
+// name in the tree that can be used for highlighting, without making a named
+// node for each keyword.
 function kw(keyword) {
     if (keyword.toUpperCase() != keyword) {
         throw new Error(`Expected upper case keyword got ${keyword}`);
