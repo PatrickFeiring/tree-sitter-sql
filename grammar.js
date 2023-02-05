@@ -77,7 +77,7 @@ module.exports = grammar({
 
         select_expression: $ => choice(
             "*",
-            commaSeparated((
+            commaSeparated1((
                 choice(
                     seq($.identifier, ".", "*"),
                     $.column
@@ -121,7 +121,7 @@ module.exports = grammar({
 
         group_by_clause: $ => seq(
             keyword('GROUP BY'),
-            commaSeparated(
+            commaSeparated1(
                 $.column
             ),
             optional(keyword('WITH ROLLUP'))
@@ -134,7 +134,7 @@ module.exports = grammar({
 
         order_by_clause: $ => seq(
             keyword('ORDER BY'),
-            commaSeparated(
+            commaSeparated1(
                 seq(
                     $.column,
                     optional(choice('ASC', 'DESC'))
@@ -275,14 +275,21 @@ module.exports = grammar({
             /(b|B)'[01]+'/
         ),
 
-        true: $ => /true/,
+        true: $ => 'true',
 
-        false: $ => /false/,
+        false: $ => 'false',
 
         NULL: $ => 'NULL'
     }
 });
 
 function commaSeparated(rule) {
+    return optional(seq(
+        rule,
+        repeat(seq(",", rule))
+    ))
+}
+
+function commaSeparated1(rule) {
     return seq(rule, repeat(seq(",", rule)))
 }
