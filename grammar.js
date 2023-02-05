@@ -144,21 +144,68 @@ module.exports = grammar({
             ))
         ),
 
-        table_references: $ => choice(
+        table_references: $ => seq(
+            choice(
+                seq(
+                    $.identifier,
+                    optional($._alias)
+                ),
+                seq(
+                    "(",
+                    $.select_statement,
+                    ")",
+                    $._alias
+                )
+            ),
+            optional($.join_clause)
+        ),
+
+        join_clause: $ => choice(
             seq(
+                choice(
+                    seq(
+                        optional(
+                            choice(
+                                "INNER",
+                                "CROSS"
+                            )),
+                        "JOIN"
+                    ),
+                    "STRAIGHT_JOIN"
+                ),
                 $.identifier,
-                optional($._alias)
+                optional($._join_specification)
             ),
             seq(
-                "(",
-                $.select_statement,
-                ")",
-                $._alias
+                choice(
+                    "LEFT",
+                    "RIGHT"
+                ),
+                optional("OUTER"),
+                "JOIN",
+                $.identifier,
+                $._join_specification
+            ),
+            seq(
+                "NATURAL",
+                "JOIN",
+                $.identifier
             )
         ),
 
-        join_clause: $ => seq(
-
+        _join_specification: $ => choice(
+            choice(
+                seq(
+                    "ON",
+                    $._expression
+                ),
+                seq(
+                    "USING",
+                    "(",
+                    commaSeparated1($.identifier),
+                    ")"
+                )
+            )
         ),
 
         column: $ => seq(
