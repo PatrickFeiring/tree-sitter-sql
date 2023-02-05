@@ -9,7 +9,7 @@ const PREC = {
     BITSHIFT: 10, // <<, >>
     BITWISE_AND: 9, // &
     BITWISE_OR: 8, // |
-    COMPARISON: 7, // 
+    COMPARISON: 7, // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, IN, MEMBER OF
     NOT: 6,
     AND: 5, // AND, &&
     XOR: 4,
@@ -173,9 +173,12 @@ module.exports = grammar({
             ")"
         ),
 
+        // Operators
         // https://dev.mysql.com/doc/refman/8.0/en/non-typed-operators.html
         _expression: $ => choice(
             $.parenthesized_expression,
+            $._literal,
+            $.call,
             $.identifier,
             $.unary_expression,
             $.binary_expression,
@@ -196,10 +199,24 @@ module.exports = grammar({
 
         binary_expression: $ => choice(
             ...[
+                ['*', PREC.MULTIPLICATION],
+                ['/', PREC.MULTIPLICATION],
+                ['%', PREC.MULTIPLICATION],
+                ['-', PREC.ADDITION],
+                ['+', PREC.ADDITION],
                 ['<<', PREC.BITSHIFT],
                 ['>>', PREC.BITSHIFT],
                 ['&', PREC.BITWISE_AND],
                 ['|', PREC.BITWISE_OR],
+                ['=', PREC.COMPARISON],
+                ['<=>', PREC.COMPARISON],
+                ['>=', PREC.COMPARISON],
+                ['>', PREC.COMPARISON],
+                ['<=', PREC.COMPARISON],
+                ['<', PREC.COMPARISON],
+                ['<>', PREC.COMPARISON],
+                ['!>', PREC.COMPARISON],
+                ['IS', PREC.COMPARISON],
                 ['AND', PREC.AND],
                 ['&&', PREC.AND],
                 ['XOR', PREC.XOR],
