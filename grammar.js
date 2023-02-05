@@ -457,7 +457,8 @@ module.exports = grammar({
                 $.in_expression,
                 $.like_expression,
                 $.regex_expression,
-                $.between_expression
+                $.between_expression,
+                $.case_expression
             ),
 
         parenthesized_expression: ($) => seq("(", $._expression, ")"),
@@ -558,6 +559,37 @@ module.exports = grammar({
                     $._expression,
                     kw("AND"),
                     $._expression
+                )
+            ),
+
+        case_expression: ($) =>
+            choice(
+                seq(
+                    kw("CASE"),
+                    $._expression,
+                    repeat1(
+                        seq(
+                            kw("WHEN"),
+                            $._expression,
+                            kw("THEN"),
+                            $._expression
+                        )
+                    ),
+                    optional(seq(kw("ELSE"), $._expression)),
+                    kw("END")
+                ),
+                seq(
+                    kw("CASE"),
+                    repeat1(
+                        seq(
+                            kw("WHEN"),
+                            $._expression,
+                            kw("THEN"),
+                            $._expression
+                        )
+                    ),
+                    optional(seq(kw("ELSE"), $._expression)),
+                    kw("END")
                 )
             ),
 
