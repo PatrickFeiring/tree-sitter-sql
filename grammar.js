@@ -35,6 +35,7 @@ module.exports = grammar({
                 $.select_statement,
                 $.update_statement,
                 $.delete_statement,
+                $.insert_statement,
                 $.create_table_statement,
             ),
             optional(";")
@@ -75,6 +76,34 @@ module.exports = grammar({
             $.where_clause,
             $.order_by_clause,
             $.limit_clause
+        ),
+
+        // Insert into statement
+        insert_statement: $ => seq(
+            "INSERT",
+            optional("IGNORE"),
+            "INTO",
+            $.identifier,
+            $.column_list,
+            "VALUES",
+            commaSeparated1($.value_list),
+            $.on_duplicate_key_clause
+        ),
+
+        column_list: $ => seq(
+            "(",
+            commaSeparated($.identifier),
+            ")"
+        ),
+
+        value_list: $ => seq(
+            "(",
+            commaSeparated($._expression),
+            ")",
+        ),
+
+        on_duplicate_key_clause: $ => seq(
+            "ON DUPLICATE KEY UPDATE"
         ),
 
         select_expression: $ => choice(
