@@ -1,10 +1,10 @@
-==================
+================================================================================
 Select statements
-==================
+================================================================================
 
 SELECT * FROM test WHERE x=2;
 
----
+--------------------------------------------------------------------------------
 
 (source_file
   (statement
@@ -14,15 +14,15 @@ SELECT * FROM test WHERE x=2;
         (table_factor
           (table_name
             (identifier))))
-        (where_clause
-          (where_condition
-            (binary_expression
+      (where_clause
+        (where_condition
+          (binary_expression
             (identifier)
             (integer)))))))
 
-====================================
+================================================================================
 Database administration statements
-====================================
+================================================================================
 
 KILL 12313;
 SHOW CREATE TABLE test_table;
@@ -30,7 +30,7 @@ SHOW DATABASES;
 SHOW FULL PROCESSLIST;
 SHOW TABLES IN test_db;
 
----
+--------------------------------------------------------------------------------
 
 (source_file
   (statement
@@ -39,7 +39,7 @@ SHOW TABLES IN test_db;
   (statement
     (show_create_table_statement
       (table_name
-      (identifier))))
+        (identifier))))
   (statement
     (show_databases_statement))
   (statement
