@@ -159,10 +159,12 @@ module.exports = grammar({
             optional($.offset_clause)
         ),
 
-        // Basic components used in many types of statements and
-        // expressions
+        // Basic components used as building block in many types of
+        // statements and expressions.
+
+        // Alias can be used without the explicit AS
         _alias: $ => seq(
-            keyword("AS"),
+            optional(keyword("AS")),
             field('alias', $.identifier)
         ),
 
