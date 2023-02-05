@@ -170,14 +170,14 @@ module.exports = grammar({
                     choice(kw("INDEX"), kw("KEY")),
                     optional($.identifier),
                     optional($.index_type),
-                    commaSeparated1($.key_part)
+                    seq("(", commaSeparated1($.key_part), ")")
                 ),
                 seq(
                     kw("ADD"),
                     optional(seq(kw("CONSTRAINT"), optional($.identifier))),
                     kw("PRIMARY KEY"),
                     optional($.index_type),
-                    commaSeparated1($.key_part)
+                    seq("(", commaSeparated1($.key_part), ")")
                 ),
                 seq(
                     kw("ADD"),
@@ -186,7 +186,7 @@ module.exports = grammar({
                     optional(choice(kw("INDEX"), kw("KEY"))),
                     optional($.identifier),
                     optional($.index_type),
-                    commaSeparated1($.key_part)
+                    seq("(", commaSeparated1($.key_part), ")")
                 ),
 
                 seq(
