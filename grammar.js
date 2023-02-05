@@ -36,7 +36,7 @@ module.exports = grammar({
                     $._database_administration_statements,
                     $._utility_statement
                 ),
-                optional(choice(";", "\\G"))
+                choice(";", "\\G")
             ),
 
         _data_definition_statement: ($) =>
