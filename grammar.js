@@ -386,6 +386,7 @@ module.exports = grammar({
             $.integer,
             $.hex,
             $.bit,
+            $.float,
             $.true,
             $.false,
             $.NULL
@@ -407,6 +408,8 @@ module.exports = grammar({
             /0b[01]+/,
             /(b|B)'[01]+'/
         ),
+
+        float: $ => /\d+\.\d+/,
 
         true: $ => 'true',
 
