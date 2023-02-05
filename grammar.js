@@ -17,7 +17,7 @@ const PREC = {
 };
 
 module.exports = grammar({
-    name: "mysql",
+    name: "sql",
 
     extras: ($) => [$.comment, /[\s\p{Zs}\uFEFF\u2060\u200B]/],
 
