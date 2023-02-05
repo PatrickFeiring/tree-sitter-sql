@@ -392,7 +392,8 @@ module.exports = grammar({
                 seq(
                     $.table_name,
                     optional(seq(kw("PARTITION"))),
-                    optional($._alias)
+                    optional($._alias),
+                    optional($.index_hint_list)
                 ),
                 seq(
                     optional(kw("LATERAL")),
@@ -458,6 +459,40 @@ module.exports = grammar({
                     seq(kw("USING"), "(", commaSeparated1($.identifier), ")")
                 )
             ),
+
+        index_hint_list: ($) => spaceSeparated1($.index_hint),
+
+        index_hint: ($) =>
+            choice(
+                seq(
+                    kw("USE"),
+                    choice(kw("INDEX"), kw("KEY")),
+                    optional(
+                        seq(
+                            kw("FOR"),
+                            choice(kw("JOIN"), kw("ORDER BY"), kw("GROUP BY"))
+                        )
+                    ),
+                    "(",
+                    optional($.index_list),
+                    ")"
+                ),
+                seq(
+                    choice(kw("IGNORE"), kw("FORCE")),
+                    choice(kw("INDEX"), kw("KEY")),
+                    optional(
+                        seq(
+                            kw("FOR"),
+                            choice(kw("JOIN"), kw("ORDER BY"), kw("GROUP BY"))
+                        )
+                    ),
+                    "(",
+                    $.index_list,
+                    ")"
+                )
+            ),
+
+        index_list: ($) => commaSeparated1($.identifier),
 
         column: ($) => seq($._expression, optional($._alias)),
 
@@ -736,6 +771,14 @@ function commaSeparated(rule) {
 
 function commaSeparated1(rule) {
     return seq(rule, repeat(seq(",", rule)));
+}
+
+function spaceSeparated(rule) {
+    return optional(seq(rule, repeat(seq(" ", rule))));
+}
+
+function spaceSeparated1(rule) {
+    return seq(rule, repeat(seq(" ", rule)));
 }
 
 function withDisplayWidth($, rule) {
