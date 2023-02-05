@@ -44,7 +44,8 @@ module.exports = grammar({
                 $.truncate_table_statement,
                 $.insert_statement,
                 $.create_table_statement,
-                $.show_tables_statement
+                $.show_tables_statement,
+                $.explain_table_statement,
             ),
             optional(choice(
                 ";",
@@ -237,6 +238,27 @@ module.exports = grammar({
             )),
         ),
 
+        // Explain statement
+        // https://dev.mysql.com/doc/refman/8.0/en/explain.html
+        explain_table_statement: $ => seq(
+            choice(
+                "EXPLAIN",
+                "DESCRIBE"
+                // "DESC"
+            ),
+            choice(
+                seq(
+                    $.table_name,
+                    optional(
+                        choice(
+                            $.identifier,
+                            $.like_pattern
+                        )
+                    )
+                )
+            )
+        ),
+
         // Insert into statement
         insert_statement: $ => seq(
             "INSERT",
@@ -367,11 +389,11 @@ module.exports = grammar({
         ),
 
         order_by_clause: $ => seq(
-            keyword('ORDER BY'),
+            keyword("ORDER BY"),
             commaSeparated1(
                 seq(
                     $.column,
-                    optional(choice('ASC', 'DESC'))
+                    optional(choice("ASC", "DESC"))
                 )
             )
         ),
