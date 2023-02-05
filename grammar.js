@@ -532,7 +532,7 @@ module.exports = grammar({
             seq(
                 field("function", $.identifier),
                 "(",
-                field("arguments", commaSeparated($._expression)),
+                field("arguments", choice(commaSeparated($._expression), "*")),
                 ")"
             ),
 
