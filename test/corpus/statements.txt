@@ -1,0 +1,49 @@
+==================
+Select statements
+==================
+
+SELECT * FROM test WHERE x=2;
+
+---
+
+(source_file
+  (statement
+    (select_statement
+      (select_expression)
+      (table_references
+        (table_factor
+          (table_name
+            (identifier))))
+        (where_clause
+          (where_condition
+            (binary_expression
+            (identifier)
+            (integer)))))))
+
+====================================
+Database administration statements
+====================================
+
+KILL 12313;
+SHOW CREATE TABLE test_table;
+SHOW DATABASES;
+SHOW FULL PROCESSLIST;
+SHOW TABLES IN test_db;
+
+---
+
+(source_file
+  (statement
+    (kill_statement
+      (integer)))
+  (statement
+    (show_create_table_statement
+      (table_name
+      (identifier))))
+  (statement
+    (show_databases_statement))
+  (statement
+    (show_processlist_statement))
+  (statement
+    (show_tables_statement
+      (identifier))))
