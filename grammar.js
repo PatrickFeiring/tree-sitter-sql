@@ -25,23 +25,39 @@ module.exports = grammar({
     rules: {
         source_file: ($) => repeat($.statement),
 
+        // https://dev.mysql.com/doc/refman/8.0/en/sql-statements.html
         statement: ($) =>
             seq(
                 choice(
-                    $.select_statement,
-                    $.update_statement,
-                    $.delete_statement,
-                    $.table_statement,
-                    $.alter_table_statement,
-                    $.drop_table_statement,
-                    $.truncate_table_statement,
-                    $.insert_statement,
-                    $.create_table_statement,
-                    $.show_tables_statement,
-                    $.explain_table_statement
+                    $._data_definition_statement,
+                    $._data_manipulation_statement,
+                    $._database_administration_statements,
+                    $._utility_statement
                 ),
                 optional(choice(";", "\\G"))
             ),
+
+        _data_definition_statement: ($) =>
+            choice(
+                $.alter_table_statement,
+                $.create_table_statement,
+                $.drop_table_statement,
+                $.truncate_table_statement
+            ),
+
+        _data_manipulation_statement: ($) =>
+            choice(
+                $.delete_statement,
+                $.insert_statement,
+                $.select_statement,
+                $.table_statement,
+                $.update_statement
+            ),
+
+        _database_administration_statements: ($) =>
+            choice($.show_tables_statement),
+
+        _utility_statement: ($) => choice($.explain_table_statement),
 
         // Create table statement
         // https://dev.mysql.com/doc/refman/8.0/en/create-table.html
