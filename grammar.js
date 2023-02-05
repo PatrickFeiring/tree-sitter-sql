@@ -57,10 +57,13 @@ module.exports = grammar({
             ),
 
         _database_administration_statements: ($) =>
+            choice($.kill_statement, $._show_statements),
+
+        _show_statements: ($) =>
             choice(
-                $.kill_statement,
-                $.show_tables_statement,
-                $.show_databases_statement
+                $.show_databases_statement,
+                $.show_processlist_statement,
+                $.show_tables_statement
             ),
 
         _utility_statement: ($) =>
