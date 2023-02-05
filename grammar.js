@@ -185,7 +185,7 @@ module.exports = grammar({
 
         update_statement: $ => seq(
             keyword('UPDATE'),
-            // $.table_name,
+            $.table_name,
             keyword('SET'),
             $.where_clause,
             $.order_by_clause,
@@ -196,7 +196,7 @@ module.exports = grammar({
         // https://dev.mysql.com/doc/refman/8.0/en/delete.html
         delete_statement: $ => seq(
             keyword('DELETE FROM'),
-            // $.table_name,
+            $.table_name,
             $.where_clause,
             $.order_by_clause,
             $.limit_clause
@@ -208,14 +208,14 @@ module.exports = grammar({
             optional("TEMPORARY"),
             "TABLE",
             optional("IF EXISTS"),
-            $.identifier
+            $.table_name
         ),
 
         // https://dev.mysql.com/doc/refman/8.0/en/truncate-table.html
         truncate_table_statement: $ => seq(
             'TRUNCATE',
             optional('TABLE'),
-            $.identifier
+            $.table_name
         ),
 
         // https://dev.mysql.com/doc/refman/8.0/en/show-tables.html
@@ -278,7 +278,7 @@ module.exports = grammar({
         table_references: $ => seq(
             choice(
                 seq(
-                    $.identifier,
+                    $.table_name,
                     optional($._alias)
                 ),
                 seq(
@@ -535,13 +535,6 @@ module.exports = grammar({
             "YEAR",
         ),
 
-        _field: $ => seq(
-            // optional(seq(
-            //     $.identifier, ","
-            // )),
-            $.identifier
-        ),
-
         like_pattern: $ => $.string,
 
         regex_pattern: $ => $.string,
@@ -556,6 +549,38 @@ module.exports = grammar({
             )
         ),
         _identifier: $ => /[a-zA-Z][0-9a-zA-Z_]*/,
+
+        _field: $ => seq(
+            optional(seq(
+                $.identifier, "."
+            )),
+            $.identifier
+        ),
+
+        column_name: $ => seq(
+            optional(field(
+                'database', seq(
+                    $.identifier,
+                    "."
+                ))),
+            optional(field(
+                'table', seq(
+                    $.identifier,
+                    "."
+                ))),
+            field('column', $.identifier)
+        ),
+
+        table_name: $ => seq(
+            optional(field(
+                'database', seq(
+                    $.identifier,
+                    "."
+                ))),
+            field('table', $.identifier)
+        ),
+
+        database_name: $ => field('database', $.identifier),
 
         // Literals
         // https://dev.mysql.com/doc/refman/8.0/en/literals.html
