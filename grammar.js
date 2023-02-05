@@ -57,7 +57,11 @@ module.exports = grammar({
             ),
 
         _database_administration_statements: ($) =>
-            choice($.show_tables_statement, $.show_databases_statement),
+            choice(
+                $.kill_statement,
+                $.show_tables_statement,
+                $.show_databases_statement
+            ),
 
         _utility_statement: ($) =>
             choice($.explain_table_statement, $.use_statement),
@@ -255,6 +259,14 @@ module.exports = grammar({
         // https://dev.mysql.com/doc/refman/8.0/en/truncate-table.html
         truncate_table_statement: ($) =>
             seq(kw("TRUNCATE"), optional(kw("TABLE")), $.table_name),
+
+        // https://dev.mysql.com/doc/refman/8.0/en/kill.html
+        kill_statement: ($) =>
+            seq(
+                kw("KILL"),
+                optional(choice(kw("CONNECTION"), kw("QUERY"))),
+                $.integer
+            ),
 
         // https://dev.mysql.com/doc/refman/8.0/en/show-tables.html
         show_databases_statement: ($) =>
