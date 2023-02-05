@@ -1,7 +1,5 @@
 // Operator precedence
 //
-// Lower values indicate .
-//
 // https://dev.mysql.com/doc/refman/8.0/en/operator-precedence.html
 const PREC = {
     INTERVAL: 14,
@@ -18,11 +16,6 @@ const PREC = {
     ASSIGNMENT: 3, // :=
     LITERAL: 2,
 };
-
-// Make a case insensitive keyword
-function keyword(word) {
-    return word;
-}
 
 module.exports = grammar({
     name: "mysql",
@@ -593,4 +586,8 @@ function commaSeparated1(rule) {
 
 function withDisplayWidth($, rule) {
     return seq(rule, optional(seq("(", $.integer, ")")));
+}
+
+function keyword(word) {
+    return word;
 }
