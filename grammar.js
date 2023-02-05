@@ -4,20 +4,21 @@
 //
 // https://dev.mysql.com/doc/refman/8.0/en/operator-precedence.html
 const PREC = {
-    MULTIPLICATION: 12, // *, /, DIV, %, MOD
-    ADDITION: 11, // -, +
-    BITSHIFT: 10, // <<, >>
-    BITWISE_AND: 9, // &
-    BITWISE_OR: 8, // |
-    COMPARISON: 7, // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, IN, MEMBER OF
-    NOT: 6,
-    AND: 5, // AND, &&
-    XOR: 4,
-    OR: 3, // OR, ||
-    ASSIGNMENT: 2 // :=
+    MULTIPLICATION: 13, // *, /, DIV, %, MOD
+    ADDITION: 12, // -, +
+    BITSHIFT: 11, // <<, >>
+    BITWISE_AND: 10, // &
+    BITWISE_OR: 9, // |
+    COMPARISON: 8, // = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, IN, MEMBER OF
+    NOT: 7,
+    AND: 6, // AND, &&
+    XOR: 5,
+    OR: 4, // OR, ||
+    ASSIGNMENT: 3, // :=
+    LITERAL: 2
 };
 
-// Make a keyword
+// Make a case insensitive keyword
 function keyword(word) {
     return word;
 }
@@ -275,7 +276,7 @@ module.exports = grammar({
 
         // Literals
         // https://dev.mysql.com/doc/refman/8.0/en/literals.html
-        _literal: $ => choice(
+        _literal: $ => prec(PREC.LITERAL, choice(
             $.string,
             $.integer,
             $.hex,
@@ -283,7 +284,7 @@ module.exports = grammar({
             $.true,
             $.false,
             $.NULL
-        ),
+        )),
 
         string: $ => choice(
             /'[^']*'/,
