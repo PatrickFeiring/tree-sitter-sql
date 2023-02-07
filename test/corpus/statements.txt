@@ -21,6 +21,24 @@ SELECT * FROM test WHERE x=2;
             (integer)))))))
 
 ================================================================================
+Data administration statements
+================================================================================
+
+CREATE DATABASE IF NOT EXISTS my_database CHARACTER SET utf8mb4 COLLATE latin1_german2_ci ENCRYPTION='Y';
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (statement
+    (create_database_statement
+      (identifier)
+      (create_option
+        (charset_name))
+      (create_option
+        (collation_name))
+      (create_option))))
+
+================================================================================
 Database administration statements
 ================================================================================
 

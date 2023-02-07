@@ -38,6 +38,7 @@ module.exports = grammar({
         _data_definition_statement: ($) =>
             choice(
                 $.alter_table_statement,
+                $.create_database_statement,
                 $.create_table_statement,
                 $.drop_table_statement,
                 $.truncate_table_statement
@@ -69,6 +70,27 @@ module.exports = grammar({
                 $.help_statement,
                 $.use_statement
             ),
+
+        create_database_statement: ($) =>
+            seq(
+                kw("CREATE DATABASE"),
+                optional(kw("IF NOT EXISTS")),
+                $.identifier,
+                spaceSeparated($.create_option)
+            ),
+
+        create_option: ($) =>
+            seq(
+                optional(kw("DEFAULT")),
+                choice(
+                    seq(kw("CHARACTER SET"), optional("="), $.charset_name),
+                    seq(kw("COLLATE"), optional("="), $.collation_name),
+                    seq(kw("ENCRYPTION"), optional("="), choice("'Y'", "'N'"))
+                )
+            ),
+
+        charset_name: ($) => $._identifier,
+        collation_name: ($) => $._identifier,
 
         create_table_statement: ($) =>
             seq(
