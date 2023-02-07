@@ -47,3 +47,36 @@ SHOW TABLES IN test_db;
   (statement
     (show_tables_statement
       (identifier))))
+
+================================================================================
+Utility statements
+================================================================================
+
+EXPLAIN mytable;
+DESC mytable;
+DESCRIBE mytable;
+HELP 'select';
+USE mydb;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (statement
+    (explain_table_statement
+      (table_name
+        (identifier))))
+  (statement
+    (explain_table_statement
+      (table_name
+        (identifier))))
+  (statement
+    (explain_table_statement
+      (table_name
+        (identifier))))
+  (statement
+    (help_statement
+      (string)))
+  (statement
+    (use_statement
+      (database_name
+        (identifier)))))
