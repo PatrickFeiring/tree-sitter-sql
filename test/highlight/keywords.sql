@@ -4,3 +4,7 @@ CREATE DATABASE IF NOT EXISTS my_database CHARACTER SET utf8mb4 COLLATE latin1_g
 --                                        ^ keyword
 --                                                              ^ keyword
 --                                                                                        ^ keyword
+
+SET NAMES DEFAULT;
+-- <- keyword
+--        ^ keyword

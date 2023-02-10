@@ -39,6 +39,22 @@ CREATE DATABASE IF NOT EXISTS my_database CHARACTER SET utf8mb4 COLLATE latin1_g
       (create_option))))
 
 ================================================================================
+Set statements
+================================================================================
+
+SET NAMES latin1;
+SET NAMES DEFAULT;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (statement
+    (set_names_statement
+      (identifier)))
+  (statement
+    (set_names_statement)))
+
+================================================================================
 Database administration statements
 ================================================================================
 

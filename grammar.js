@@ -54,7 +54,12 @@ module.exports = grammar({
             ),
 
         _database_administration_statements: ($) =>
-            choice($.kill_statement, $._show_statements),
+            choice($.kill_statement, $._set_statements, $._show_statements),
+
+        _set_statements: ($) => choice($.set_names_statement),
+
+        set_names_statement: ($) =>
+            seq(kw("SET NAMES"), choice($.identifier, kw("DEFAULT"))),
 
         _show_statements: ($) =>
             choice(

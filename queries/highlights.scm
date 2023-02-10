@@ -93,6 +93,7 @@
   "RIGHT"
   "SELECT"
   "SET"
+  "SET_NAMES"
   "SHOW"
   "TABLE"
   "TABLES"
