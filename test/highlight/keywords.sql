@@ -8,3 +8,13 @@ CREATE DATABASE IF NOT EXISTS my_database CHARACTER SET utf8mb4 COLLATE latin1_g
 SET NAMES DEFAULT;
 -- <- keyword
 --        ^ keyword
+
+SET CHARACTER SET DEFAULT;
+-- <- keyword
+--  ^ keyword
+--                ^ keyword
+
+SET CHARSET DEFAULT;
+-- <- keyword
+--  ^ keyword
+--          ^ keyword

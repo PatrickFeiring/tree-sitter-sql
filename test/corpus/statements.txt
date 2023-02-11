@@ -44,6 +44,8 @@ Set statements
 
 SET NAMES latin1;
 SET NAMES DEFAULT;
+SET CHARSET latin1;
+SET CHARACTER SET DEFAULT;
 
 --------------------------------------------------------------------------------
 
@@ -52,7 +54,12 @@ SET NAMES DEFAULT;
     (set_names_statement
       (identifier)))
   (statement
-    (set_names_statement)))
+    (set_names_statement))
+  (statement
+    (set_character_set_statement
+      (identifier)))
+  (statement
+    (set_character_set_statement)))
 
 ================================================================================
 Database administration statements
