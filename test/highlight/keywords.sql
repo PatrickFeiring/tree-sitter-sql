@@ -23,3 +23,16 @@ SHOW CREATE TABLE my_table;
 -- <- keyword
 --   ^ keyword
 --          ^ keyword
+
+SHOW DATABASES;
+-- <- keyword
+--   ^ keyword
+
+SHOW PROCESSLIST;
+-- <- keyword
+--   ^ keyword
+
+SHOW TABLES FROM my_database;
+-- <- keyword
+--   ^ keyword
+--          ^ keyword

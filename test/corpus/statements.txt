@@ -66,12 +66,23 @@ Show statements
 ================================================================================
 
 SHOW CREATE TABLE my_table;
+SHOW DATABASES;
+SHOW PROCESSLIST;
+SHOW TABLES FROM my_database;
 
 --------------------------------------------------------------------------------
 
 (source_file
   (statement
     (show_create_table_statement
+      (table_name
+        (identifier))))
+  (statement
+    (show_databases_statement))
+  (statement
+    (show_processlist_statement))
+  (statement
+    (show_tables_statement
       (table_name
         (identifier)))))
 
@@ -101,7 +112,8 @@ SHOW TABLES IN test_db;
     (show_processlist_statement))
   (statement
     (show_tables_statement
-      (identifier))))
+      (table_name
+        (identifier)))))
 
 ================================================================================
 Utility statements
