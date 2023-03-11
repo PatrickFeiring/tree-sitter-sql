@@ -18,3 +18,8 @@ SET CHARSET DEFAULT;
 -- <- keyword
 --  ^ keyword
 --          ^ keyword
+
+SHOW CREATE TABLE my_table;
+-- <- keyword
+--   ^ keyword
+--          ^ keyword

@@ -96,6 +96,7 @@
   "SET"
   "SET_NAMES"
   "SHOW"
+  "SHOW_CREATE_TABLE"
   "TABLE"
   "TABLES"
   "TEMPORARY"
