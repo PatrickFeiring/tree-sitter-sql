@@ -365,7 +365,7 @@ module.exports = grammar({
                 optional(kw("EXTENDED")),
                 optional(kw("FULL")),
                 kw("TABLES"),
-                optional(seq(choice(kw("FROM"), kw("IN")), $.identifier)),
+                optional(seq(choice(kw("FROM"), kw("IN")), $.table_name)),
                 optional(seq(kw("LIKE"), $.like_pattern))
             ),
 
